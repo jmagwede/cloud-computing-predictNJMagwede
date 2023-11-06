@@ -215,7 +215,44 @@ def lambda_handler(event, context):
     # <<< Ensure that the DynamoDB write response object is saved 
     #    as the variable `db_response` >>> 
     # --- Insert your code here ---
+def lambda_handler(event, context):
+    
+    # Perform JSON data decoding 
+    body_enc = event['body']
+    dec_dict = json.loads(base64.b64decode(body_enc))
+    
+    
+    # --- Write to dynamodb ---
+    
+    # ** Create a variable that can take a random value between 1 and 1 000 000 000. 
+    # This variable will be used as our key value i.e the ResponsesID and should be of type integer.
+    # It is important to note that the ResponseID i.e. the rid variable, should take
+    # on a unique value to prevent errors when writing to DynamoDB. **
+    
+    # --- Insert your code here ---
+    rid = random.randint (1, 1000000000) # <--- Replace this value with your code.
+    # -----------------------------
+    
+    # ** Instantiate the DynamoDB service with the help of the boto3 library **
+    
+    # --- Insert your code here ---
+    dynamodb = boto3.resource('dynamodb') # <--- Replace this value with your code.
+    # -----------------------------
+    
+    # Instantiate the table. Remember pass the name of the DynamoDB table created in step 4
+    table = dynamodb.Table('# Judy-portfolio-data-table')
+    
+    # ** Write the responses to the table using the put_item method. **
 
+    # Complete the below code so that the appropriate 
+    # incoming data is sent to the matching column in your DynamoDB table
+    # --- Insert your code here ---
+    db_response = table.put_item(Item={'ResponsesID': 100, # <--- Insert the correct variable
+                        'Name': Student, # <--- Insert the correct variable
+                        'Email': student@explore-ai.net, # <--- Insert the correct variable
+                        'Cell': 123456789, # <--- Insert the correct variable
+                        'Message': Empty Message # <--- Insert the correct variable
+    })
 
     # Do not change the name of this variable
     db_response = None
@@ -259,8 +296,79 @@ def lambda_handler(event, context):
     # `email_text` variable as it's body.
     # <<< Ensure that the SES service response is stored in the variable `ses_response` >>> 
     # --- Insert your code here ---
+def lambda_handler(event, context):
+    
+    # Perform JSON data decoding 
+    body_enc = event['body']
+    dec_dict = json.loads(base64.b64decode(body_enc))
 
-    # Do not change the name of this variable
+    # Sample text that you would like to email to your recipient 
+    # address from your sender address.
+    email_text = 'Thank you for your email'
+
+    # ** SES Functionality **
+
+    # Replace sender@example.com with your "From" address.
+    # This address must be verified with Amazon SES.
+    # --- Insert your code here ---
+    SENDER = 'jmagwede@gmail.com'
+    # -----------------------------
+
+    # Replace recipient@example.com with a "To" address. If your account 
+    # is still in the sandbox, this address must be verified.
+    # --- Insert your code here ---
+    RECIPIENT = '50727567@mylife.unisa.ac.za' 
+    # -----------------------------
+
+
+    # The subject line for the email.
+    # --- DO NOT MODIFY THIS CODE ---
+    SUBJECT = f"Data Science Portfolio Project Website - Hello {dec_dict['name']}"
+    # -------------------------------
+
+    # The email body for recipients with non-HTML email clients
+    BODY_TEXT = (email_text)
+
+    # The character encoding for the email.
+    CHARSET = "UTF-8"
+
+    # Create a new SES service resource
+    client = boto3.client('ses')
+
+    # Try to send the email.
+    try:
+        #Provide the contents of the email.
+        ses_response = client.send_email(
+            Destination={
+                'ToAddresses': [
+                    RECIPIENT,
+                    # 'edsa.predicts@explore-ai.net', # <--- Uncomment this line once you have successfully tested your predict end-to-end
+                ],
+            },
+            Message={
+                'Body': {
+
+                    'Text': {
+                        'Charset': CHARSET,
+                        'Data': BODY_TEXT,
+                    },
+                },
+                'Subject': {
+                    'Charset': CHARSET,
+                    'Data': SUBJECT,
+                },
+            },
+            Source=SENDER,
+        )
+
+    # Display an error if something goes wrong.	
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        print("Email sent! Message ID:"),
+        print(ses_response['MessageId'])
+
+      # Do not change the name of this variable
     ses_response = None
     
     # ...
